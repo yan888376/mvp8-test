@@ -1,3 +1,11 @@
+/**
+ * SiteHub - Your Personal Web Dashboard
+ * 
+ * @author Yuxuan Zhou
+ * @copyright 2025 Yuxuan Zhou. All rights reserved.
+ * @license MIT
+ */
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
