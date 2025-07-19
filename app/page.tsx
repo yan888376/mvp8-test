@@ -11,7 +11,7 @@ import { Toast } from "@/components/toast"
 import { Button } from "@/components/ui/button"
 import { Shuffle, Plus, Crown } from "lucide-react"
 
-export default function WebHub() {
+export default function SiteHub() {
   const [sites, setSites] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -25,9 +25,9 @@ export default function WebHub() {
 
   useEffect(() => {
     // Load sites from localStorage or default
-    const savedSites = localStorage.getItem("webhub-sites")
-    const savedShuffle = localStorage.getItem("webhub-shuffle")
-    const savedFavorites = localStorage.getItem("webhub-favorites")
+    const savedSites = localStorage.getItem("sitehub-sites")
+    const savedShuffle = localStorage.getItem("sitehub-shuffle")
+    const savedFavorites = localStorage.getItem("sitehub-favorites")
 
     if (savedSites) {
       setSites(JSON.parse(savedSites))
@@ -819,8 +819,8 @@ export default function WebHub() {
 
   const handleAuth = (provider) => {
     // Migrate guest data to authenticated user data
-    const guestSites = localStorage.getItem("webhub-sites")
-    const guestFavorites = localStorage.getItem("webhub-favorites")
+    const guestSites = localStorage.getItem("sitehub-sites")
+    const guestFavorites = localStorage.getItem("sitehub-favorites")
     
     // Clear guest timer
     localStorage.removeItem("guest-start-time")
@@ -838,16 +838,16 @@ export default function WebHub() {
     setUser(newUser)
     setShowUpgradeModal(false)
     
-    // Migrate data if user had guest data
-    if (guestSites || guestFavorites) {
-      if (guestSites) {
-        const userKey = `webhub-sites-${newUser.email}`
-        localStorage.setItem(userKey, guestSites)
-      }
-      if (guestFavorites) {
-        const userKey = `webhub-favorites-${newUser.email}`
-        localStorage.setItem(userKey, guestFavorites)
-      }
+          // Migrate data if user had guest data
+      if (guestSites || guestFavorites) {
+        if (guestSites) {
+          const userKey = `sitehub-sites-${newUser.email}`
+          localStorage.setItem(userKey, guestSites)
+        }
+        if (guestFavorites) {
+          const userKey = `sitehub-favorites-${newUser.email}`
+          localStorage.setItem(userKey, guestFavorites)
+        }
       showToast(`Welcome! Your data has been saved permanently! 🎉`)
     } else {
       showToast(`Welcome! You now have unlimited access! 🎉`)
@@ -889,7 +889,7 @@ export default function WebHub() {
     const featuredSites = sites.filter((site) => site.featured)
     const reorderedSites = [...featuredSites, ...newSites]
     setSites(reorderedSites)
-    localStorage.setItem("webhub-sites", JSON.stringify(reorderedSites))
+    localStorage.setItem("sitehub-sites", JSON.stringify(reorderedSites))
     showToast("Sites reordered! 📝")
   }
 
@@ -914,8 +914,8 @@ export default function WebHub() {
     const updatedFavorites = [...favorites, siteWithId.id]
     setFavorites(updatedFavorites)
 
-    saveUserData("webhub-sites", updatedSites)
-    saveUserData("webhub-favorites", updatedFavorites)
+    saveUserData("sitehub-sites", updatedSites)
+    saveUserData("sitehub-favorites", updatedFavorites)
     
     if (user.type === "guest") {
       showToast(`${newSite.name} added! ⭐ Sign up to keep your data forever!`)
@@ -930,7 +930,7 @@ export default function WebHub() {
       : [...favorites, siteId]
     
     setFavorites(newFavorites)
-    saveUserData("webhub-favorites", newFavorites)
+    saveUserData("sitehub-favorites", newFavorites)
     
     const site = sites.find((s) => s.id === siteId)
     const isFavorited = newFavorites.includes(siteId)
@@ -955,10 +955,10 @@ export default function WebHub() {
     if (favorites.includes(siteId)) {
       const newFavorites = favorites.filter((id) => id !== siteId)
       setFavorites(newFavorites)
-      saveUserData("webhub-favorites", newFavorites)
+      saveUserData("sitehub-favorites", newFavorites)
     }
 
-    saveUserData("webhub-sites", updatedSites)
+    saveUserData("sitehub-sites", updatedSites)
     showToast("Site removed")
   }
 

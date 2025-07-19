@@ -39,10 +39,10 @@ export function Header({ user, setUser, onGuestTimeExpired, onUpgradeClick }) {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-              <span className="text-xl font-bold">W</span>
+              <span className="text-xl font-bold">S</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold">WebHub</h1>
+              <h1 className="text-xl font-bold">SiteHub</h1>
               <Badge variant="secondary" className="text-xs bg-white/10 text-white/80">
                 300+ Sites
               </Badge>

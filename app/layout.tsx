@@ -6,7 +6,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "WebHub - Your Personal Web Dashboard",
+  title: "SiteHub - Your Personal Web Dashboard",
   description: "Access 300+ top websites instantly. Chrome-like new tab page with customization.",
     generator: 'v0.dev'
 }
