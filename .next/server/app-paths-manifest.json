@@ -1,4 +1,3 @@
 {
-  "/page": "app/page.js",
   "/api/test-google-auth/route": "app/api/test-google-auth/route.js"
 }
