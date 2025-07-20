@@ -18,18 +18,29 @@ import { UpgradeModal } from "@/components/upgrade-modal"
 import { Toast } from "@/components/toast"
 import { Button } from "@/components/ui/button"
 import { Shuffle, Plus, Crown } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
+
+interface Site {
+  id: string
+  name: string
+  url: string
+  logo: string
+  featured?: boolean
+  custom: boolean
+  category: string
+}
 
 export default function SiteHub() {
-  const [sites, setSites] = useState([])
+  const { user } = useAuth()
+  const [sites, setSites] = useState<Site[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isShuffled, setIsShuffled] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const [toast, setToast] = useState(null)
-  const [user, setUser] = useState({ type: "guest", customCount: 0, pro: false })
+  const [toast, setToast] = useState<any>(null)
   const [isGuestTimeExpired, setIsGuestTimeExpired] = useState(false)
-  const [favorites, setFavorites] = useState([])
+  const [favorites, setFavorites] = useState<string[]>([])
 
   useEffect(() => {
     // Load sites from localStorage or default
@@ -822,43 +833,38 @@ export default function SiteHub() {
   }
 
   const handleUpgradeClick = () => {
-    setShowUpgradeModal(true)
+    // Directly trigger the auth modal in signup mode
+    setTimeout(() => {
+      const event = new CustomEvent('openAuthModal', { 
+        detail: { mode: 'signup' } 
+      })
+      window.dispatchEvent(event)
+    }, 100)
   }
 
-  const handleAuth = (provider) => {
-    // Migrate guest data to authenticated user data
-    const guestSites = localStorage.getItem("sitehub-sites")
-    const guestFavorites = localStorage.getItem("sitehub-favorites")
-    
-    // Clear guest timer
-    localStorage.removeItem("guest-start-time")
-    setIsGuestTimeExpired(false)
-
-    // Simulate authentication
-    const newUser = {
-      type: "authenticated",
-      name: provider === "wechat" ? "张三" : "John Doe",
-      email: provider === "wechat" ? "zhangsan@wechat.com" : "john@example.com",
-      customCount: 3,
-      pro: provider === "pro" || provider === "google" || provider === "wechat",
-    }
-    
-    setUser(newUser)
+  const handleAuth = (provider: string) => {
+    // Close the upgrade modal first
     setShowUpgradeModal(false)
     
-          // Migrate data if user had guest data
-      if (guestSites || guestFavorites) {
-        if (guestSites) {
-          const userKey = `sitehub-sites-${newUser.email}`
-          localStorage.setItem(userKey, guestSites)
-        }
-        if (guestFavorites) {
-          const userKey = `sitehub-favorites-${newUser.email}`
-          localStorage.setItem(userKey, guestFavorites)
-        }
-      showToast(`Welcome! Your data has been saved permanently! 🎉`)
+    // Trigger the auth modal with the appropriate mode
+    if (provider === "login") {
+      // This will be handled by the header's auth modal
+      // We need to trigger the sign-in modal
+      setTimeout(() => {
+        // Trigger the auth modal through the header
+        const event = new CustomEvent('openAuthModal', { 
+          detail: { mode: 'login' } 
+        })
+        window.dispatchEvent(event)
+      }, 100)
     } else {
-      showToast(`Welcome! You now have unlimited access! 🎉`)
+      // For other providers, trigger the auth modal in signup mode
+      setTimeout(() => {
+        const event = new CustomEvent('openAuthModal', { 
+          detail: { mode: 'signup', provider } 
+        })
+        window.dispatchEvent(event)
+      }, 100)
     }
   }
 
@@ -888,7 +894,7 @@ export default function SiteHub() {
     showToast("Sites shuffled! ✨")
   }
 
-  const handleReorder = (newSites) => {
+  const handleReorder = (newSites: Site[]) => {
     if (user.type === "guest" && isGuestTimeExpired) {
       setShowUpgradeModal(true)
       return
@@ -901,7 +907,7 @@ export default function SiteHub() {
     showToast("Sites reordered! 📝")
   }
 
-  const addCustomSite = (newSite) => {
+  const addCustomSite = (newSite: any) => {
     if (!user.pro && user.customCount >= 10) {
       showToast("Free limit reached! Upgrade to Pro for unlimited sites.", "error")
       return
@@ -916,7 +922,6 @@ export default function SiteHub() {
 
     const updatedSites = [...sites, siteWithId]
     setSites(updatedSites)
-    setUser((prev) => ({ ...prev, customCount: prev.customCount + 1 }))
 
     // Automatically add the new site to favorites
     const updatedFavorites = [...favorites, siteWithId.id]
@@ -932,7 +937,7 @@ export default function SiteHub() {
     }
   }
 
-  const toggleFavorite = (siteId) => {
+  const toggleFavorite = (siteId: string) => {
     const newFavorites = favorites.includes(siteId)
       ? favorites.filter((id) => id !== siteId)
       : [...favorites, siteId]
@@ -950,14 +955,9 @@ export default function SiteHub() {
     }
   }
 
-  const removeSite = (siteId) => {
+  const removeSite = (siteId: string) => {
     const updatedSites = sites.filter((site) => site.id !== siteId)
     setSites(updatedSites)
-
-    const removedSite = sites.find((site) => site.id === siteId)
-    if (removedSite?.custom) {
-      setUser((prev) => ({ ...prev, customCount: prev.customCount - 1 }))
-    }
 
     // Also remove from favorites if it was favorited
     if (favorites.includes(siteId)) {
@@ -970,7 +970,7 @@ export default function SiteHub() {
     showToast("Site removed")
   }
 
-  const showToast = (message, type = "success") => {
+  const showToast = (message: string, type = "success") => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3000)
   }
@@ -980,8 +980,6 @@ export default function SiteHub() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
       <Header
-        user={user}
-        setUser={setUser}
         onGuestTimeExpired={handleGuestTimeExpired}
         onUpgradeClick={handleUpgradeClick}
       />
@@ -1002,7 +1000,14 @@ export default function SiteHub() {
                 </div>
               </div>
               <Button
-                onClick={() => setShowUpgradeModal(true)}
+                onClick={() => {
+                  setTimeout(() => {
+                    const event = new CustomEvent('openAuthModal', { 
+                      detail: { mode: 'signup' } 
+                    })
+                    window.dispatchEvent(event)
+                  }, 100)
+                }}
                 className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
               >
                 <Crown className="w-4 h-4 mr-2" />

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Heart, GripVertical, Chrome, MessageCircle, X } from "lucide-react"
+import { Clock, Heart, GripVertical, Chrome, X } from "lucide-react"
 
 interface GuestLimitationBannerProps {
   user: any
@@ -108,14 +108,6 @@ export function GuestLimitationBanner({ user, onSignUpClick, onDismiss }: GuestL
             <Button size="sm" onClick={onSignUpClick} className="bg-white text-black hover:bg-gray-100 font-medium">
               <Chrome className="w-4 h-4 mr-2" />
               Sign up with Google
-            </Button>
-            <Button
-              size="sm"
-              onClick={onSignUpClick}
-              className="bg-green-600 text-white hover:bg-green-700 font-medium"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Sign up with WeChat
             </Button>
           </div>
 

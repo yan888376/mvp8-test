@@ -85,14 +85,19 @@ export function GuestTimer({ user, onTimeExpired, onUpgradeClick }: GuestTimerPr
       )}
 
       {(timeRemaining < 120 || isExpired) && (
-        <Button
-          size="sm"
-          onClick={onUpgradeClick}
-          className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
-        >
-          <Crown className="w-4 h-4 mr-2" />
-          {isExpired ? "Sign Up to Continue" : "Save My Data"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={onUpgradeClick}
+            className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
+          >
+            <Crown className="w-4 h-4 mr-2" />
+            {isExpired ? "Sign Up to Continue" : "Save My Data"}
+          </Button>
+          <span className="text-xs text-yellow-300">
+            {isExpired ? "✨ Keep your favorites forever!" : "💾 Don't lose your data!"}
+          </span>
+        </div>
       )}
     </div>
   )

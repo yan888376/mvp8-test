@@ -1,11 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Crown, Chrome, Facebook, Mail, Clock, Zap, Heart, Shield, MessageCircle } from "lucide-react"
+import { Crown, Chrome, Mail, Clock, Zap, Heart, Shield } from "lucide-react"
 
 interface UpgradeModalProps {
   isOpen: boolean
@@ -15,12 +16,23 @@ interface UpgradeModalProps {
 }
 
 export function UpgradeModal({ isOpen, onClose, onAuth, isTimeExpired }: UpgradeModalProps) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  
   const features = [
     { icon: Zap, text: "Unlimited drag & drop reordering", premium: false },
     { icon: Heart, text: "Save unlimited custom sites", premium: true },
     { icon: Shield, text: "Cloud sync across devices", premium: true },
     { icon: Crown, text: "Premium themes & layouts", premium: true },
   ]
+
+  const handleEmailSignup = () => {
+    if (!email || !password) {
+      alert("Please fill in both email and password")
+      return
+    }
+    onAuth("email")
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -66,22 +78,6 @@ export function UpgradeModal({ isOpen, onClose, onAuth, isTimeExpired }: Upgrade
                 <Chrome className="w-4 h-4 mr-2" />
                 Continue with Google
               </Button>
-              <Button
-                variant="outline"
-                className="bg-green-600 text-white hover:bg-green-700"
-                onClick={() => onAuth("wechat")}
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Continue with WeChat
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-blue-600 text-white hover:bg-blue-700"
-                onClick={() => onAuth("facebook")}
-              >
-                <Facebook className="w-4 h-4 mr-2" />
-                Continue with Facebook
-              </Button>
             </div>
 
             <div className="relative">
@@ -96,15 +92,29 @@ export function UpgradeModal({ isOpen, onClose, onAuth, isTimeExpired }: Upgrade
             <div className="space-y-3">
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="your@email.com" className="bg-slate-700 border-slate-600" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="your@email.com" 
+                  className="bg-slate-700 border-slate-600" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" className="bg-slate-700 border-slate-600" />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="bg-slate-700 border-slate-600" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => onAuth("email")}>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={handleEmailSignup}>
               <Mail className="w-4 h-4 mr-2" />
               Create Free Account
             </Button>
