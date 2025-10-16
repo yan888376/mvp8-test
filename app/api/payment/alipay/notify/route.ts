@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import AlipaySdk from 'alipay-sdk'
+import * as AlipaySdk from 'alipay-sdk'
 import { createClient } from '@supabase/supabase-js'
 
 const SUCCESS_RESPONSE = 'success'
@@ -16,17 +16,19 @@ function createSupabaseClient() {
   return createClient(supabaseUrl, serviceRoleKey)
 }
 
-if (!process.env.ALIPAY_APP_ID || !process.env.ALIPAY_PRIVATE_KEY || !process.env.ALIPAY_PUBLIC_KEY) {
-  throw new Error('Alipay environment variables are not configured. Please set ALIPAY_APP_ID, ALIPAY_PRIVATE_KEY, and ALIPAY_PUBLIC_KEY.')
-}
+function createAlipaySdk() {
+  if (!process.env.ALIPAY_APP_ID || !process.env.ALIPAY_PRIVATE_KEY || !process.env.ALIPAY_PUBLIC_KEY) {
+    throw new Error('Alipay environment variables are not configured. Please set ALIPAY_APP_ID, ALIPAY_PRIVATE_KEY, and ALIPAY_PUBLIC_KEY.')
+  }
 
-const alipaySdk = new AlipaySdk({
-  appId: process.env.ALIPAY_APP_ID,
-  privateKey: process.env.ALIPAY_PRIVATE_KEY,
-  alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY,
-  gateway: process.env.ALIPAY_GATEWAY || 'https://openapi.alipay.com/gateway.do',
-  camelcase: true
-})
+  return new AlipaySdk({
+    appId: process.env.ALIPAY_APP_ID,
+    privateKey: process.env.ALIPAY_PRIVATE_KEY,
+    alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY,
+    gateway: process.env.ALIPAY_GATEWAY || 'https://openapi.alipay.com/gateway.do',
+    camelcase: true
+  })
+}
 
 function parsePassbackParams(raw?: string) {
   if (!raw) return null
@@ -41,6 +43,8 @@ function parsePassbackParams(raw?: string) {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const bodyText = await req.text()
@@ -50,6 +54,7 @@ export async function POST(req: NextRequest) {
       params[key] = value
     })
 
+    const alipaySdk = createAlipaySdk()
     const validSign = alipaySdk.checkNotifySign(params)
     if (!validSign) {
       console.error('Alipay notify signature verification failed:', params)

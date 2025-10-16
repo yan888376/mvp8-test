@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+function createStripeClient() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is required')
+  }
+  
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-09-30.clover',
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,6 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 创建Stripe Checkout会话
+    const stripe = createStripeClient()
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [

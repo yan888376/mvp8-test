@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import AlipaySdk from 'alipay-sdk'
+import * as AlipaySdk from 'alipay-sdk'
 import { randomUUID } from 'crypto'
 
 interface PricingPlan {
@@ -35,6 +35,8 @@ function validateEnv() {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     validateEnv()
@@ -69,7 +71,7 @@ export async function POST(req: NextRequest) {
     }
 
     const orderId = `ALI_${randomUUID()}`
-    const alipaySdk = new AlipaySdk({
+    const alipaySdk = new AlipaySdk.default({
       appId: process.env.ALIPAY_APP_ID!,
       privateKey: process.env.ALIPAY_PRIVATE_KEY!,
       alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY!,

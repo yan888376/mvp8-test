@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+function createStripeClient() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is required')
+  }
+  
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-09-30.clover',
+  })
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,6 +24,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event
 
   try {
+    const stripe = createStripeClient()
     event = stripe.webhooks.constructEvent(
       body,
       sig,
